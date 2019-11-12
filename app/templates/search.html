@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ 'Search Results' }}</h1>
+        <div class="row">
+            {% for u in users %} 
+            <div class="card" style="width: 18rem;">
+                <img src="{{ u.avatar(130) }}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title"><a href="{{url_for('profile', username=u.username)}}">{{u.username}}</a></h5>
+                    
+                    
+                  </div>
+            </div>
+            {%endfor%}
+    
+        </div>
+
+    
+{% endblock %}

@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+
+{% block content %}
+<h1>notificaciones</h1>
+
+
+{%for n in notifications%}
+<ul class="list-group" id="messages">
+  <li class="list-group-item">{{n.accion}}   {{n.timestamp}} <a href="{{url_for('delete_notification', id=n.id )}}"> <button style="margin-left:35em;">Delete</button></a></li>
+</ul>
+{%endfor%}
+
+{%endblock%}

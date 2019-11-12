@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+
+    {% endblock %}
+</head>
+<body style="font-family: Open Sans, Arial, sans-serif;
+    min-height: 100vh;
+    background-color: #fafafa;
+    color: #262626;
+    padding-bottom: 3rem;">
+  {% if current_user.is_authenticated %}
+    <div id="navbar">
+        {%block navbar%}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="{{url_for('index')}}">MyInstagram</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('profile', username=current_user.username)}}">Profile <span class="sr-only"></span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('explore')}}">Explore</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('notificaciones')}}">Notificaciones <span id='notiCount'>0</span></a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+              </li>
+              
+            </ul>
+            {% if g.search_form %}
+            <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('search') }}">
+               <div class="form-group">
+                        {{ g.search_form.q(size=20, class='form-control',
+                            placeholder=g.search_form.q.label.text) }}
+                    </div>
+                </form>
+                {% endif %}
+          </div>
+    </nav>
+    {%endblock%}
+    {%endif%}
+
+
+    </div>
+
+    <div id="content" class="container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+    {% block content %}
+    {% endblock %}</div>
+        
+    
+</body>
+</html>
+
+{%block scripts %}
+    
+    
+    
+    <script type="text/javascript">
+
+      $('document').ready(function (){
+          var user = $('.profile-user-name').text();
+          var counter = 0;
+          var counterEnd = 6;
+
+          var socket = io.connect('http://127.0.0.1:5000');
+
+
+          $('.alert').attr('class', 'alert alert-primary fade')
+
+          $('#newPost').click(function(e){
+             $('.Modal').modal('show');
+
+          })
+
+          $(':button').click( function(e){
+                var id = $(this).attr('id');
+                var user = $('#username').val();
+                var comentario_ = $('#comment_'+id.slice(2,4)).val();
+                var postId = id.slice(2,4)
+                $.ajax({
+                      data: {
+                          comentario:comentario_,
+                          user: user,
+                          postId: postId
+
+                      },
+                      type : 'POST',
+                      url : '/addComment',
+
+                      success: function(data){
+                            console.log(data);
+                            console.log(id);
+                            $('#post_'+id.slice(2,4)).last().append('<ul class="list-group list-group-flush"><li class="list-group-item" style="border: none"><a href="" style="text-decoration: none; color:black"><strong>'+user+'</strong></a> <span>'+comentario_+'</span></li></ul>');
+                                
+
+                      },
+                      error: function(error){
+                        console.log(error);
+                      }
+                });
+                e.preventDefault()
+                $('#comment_'+id.slice(2,4)).val('');
+          });
+          //peticion ajax para likes and dislike
+          $('.likes, .dislikes').click(function(e){
+            var id = $(this).attr('id');
+            var class_ = $(this).attr('class');
+            var n = $('#count_'+id).text();
+            
+            
+            $.ajax({
+              data:{postId: id, action:class_},
+              type: 'POST',
+              url: '/likes',
+
+
+              success: function(data){
+                console.log(data)
+                if (class_ === 'likes'){
+                  
+                  var r = parseInt(n) + 1;
+                  $('#count_'+id).text(r)
+                  
+
+
+                }else{
+                  console.log(class_ + 'class_')
+                  var r = parseInt(n) - 1;
+                  $('#count_'+id).text(r)
+                  
+                }
+              },
+              error: function(error){
+                console.log(error)
+              }
+            });
+          
+          //evalua la classe de la etiqueta (a)
+           if(class_ == 'dislikes'){
+              $(this).attr('class' ,'likes')
+              $(this).text('Like')
+              
+
+           }else{
+              $(this).attr('class' ,'dislikes')
+              $(this).text('Dislike')
+
+           }
+            e.preventDefault()
+
+          });
+          $('.follow, .unfollow').click(function(e){
+            
+           var user = $('.profile-user-name').text()
+           var accion = $(this).attr('class');
+           var Fcount = $('#followers_count').text()
+
+           //variables para peticiones socket
+            var count = $('#notiCount').text();
+            var username = $(this).attr('id');
+            var total = parseInt(count) +1;
+            var notification={data:'{{current_user.username}} is following you!', other_user: user, timestamp:0}
+
+            $.ajax({
+              data:{username:user,accion:accion},
+              type:'POST',
+              url:'/follow',
+
+              success: function(data){
+                console.log(data );
+                
+              },
+              error: function(error){
+                console.log(error);
+              }
+
+
+
+            });
+            if(accion == 'follow'){
+              
+
+              aux = parseInt(Fcount) + 1;
+              $(this).text('Unfollow');
+              $(this).attr('class', 'unfollow');
+              $('#followers_count').text(aux);
+              $('.alert').attr('class', 'alert alert-primary show').text('Follow' + ' ' + user)
+                            
+              var d = new Date();
+              notification.timestamp = d.getDate() + '/' + d.getMonth() + '/'+ d.getFullYear()
+              socket.emit('json',notification);
+            
+
+
+              
+
+
+            }else{
+
+
+              aux = parseInt(Fcount) - 1;
+              $(this).text('Follow');
+              $(this).attr('class', 'follow');
+              $('#followers_count').text(aux);
+              $('.alert').attr('class', 'alert alert-primary show').text('unfollow' + ' ' + user )
+
+
+            }
+
+
+            e.preventDefault()
+          });
+          
+
+          
+
+          ///socketio ///
+
+          socket.on('connect', function(){
+              socket.emit('json', {data:'User has connected!'});
+
+          });
+
+          socket.on('json', function(notification){
+            ///mostrar notificacions al usuario que le dan follow
+            if (notification.other_user === '{{current_user.username}}'){
+              $('#messages').append('<li class="list-group-item">'+notification.data+ '  '+notification.timestamp + '<button style="margin-left:35em;" >Delete</button>' + '</li>')
+                var count = $('#notiCount').text();
+                var total = parseInt(count) + 1;
+                socket.send($('#notiCount').text(total))
+
+
+            }
+              
+          });
+
+          
+
+          
+
+      });
+
+      
+
+
+// Function to request new items and render to the dom
+/*
+ var scroller = document.querySelector("#scroller");
+var template = document.querySelector('#post_template');
+var loaded = document.querySelector("#loaded");
+var sentinel = document.querySelector('#sentinel');
+
+// Set a counter to count the items loaded
+var counter = 0;
+
+// Function to request new items and render to the dom
+function loadItems() {
+
+  // Use fetch to request data and pass the counter value in the QS
+  fetch(`/load?c=${counter}`).then((response) => {
+
+    // Convert the response data to JSON
+    response.json().then((data) => {
+
+      // If empty JSON, exit the function
+      if (!data.length) {
+
+        // Replace the spinner with "No more posts"
+        sentinel.innerHTML = "No more posts";
+        return;
+      }
+
+      // Iterate over the items in the response
+      for (var i = 0; i < data.length; i++) {
+
+        // Clone the HTML template
+        let template_clone = template.content.cloneNode(true);
+
+        // Query & update the template content
+        //template_clone.querySelector("#title").innerHTML = `${data[i][0]}: ${data[i][1]}`;
+        template_clone.querySelector("#content").innerHTML = '<img src="http://localhost:5000/static/photos/ig_1.jpg">''</img>';
+
+        // Append template to dom
+        scroller.appendChild(template_clone);
+
+        // Increment the counter
+        counter += 1;
+
+        // Update the counter in the navbar
+        loaded.innerText = `${counter} items loaded`;
+
+      }
+    })
+  })
+}
+
+// Create a new IntersectionObserver instance
+var intersectionObserver = new IntersectionObserver(entries => {
+
+  // Uncomment below to see the entry.intersectionRatio when
+  // the sentinel comes into view
+
+  // entries.forEach(entry => {
+  //   console.log(entry.intersectionRatio);
+  // })
+
+  // If intersectionRatio is 0, the sentinel is out of view
+  // and we don't need to do anything. Exit the function
+  if (entries[0].intersectionRatio <= 0) {
+    return;
+  }
+
+  // Call the loadItems function
+  loadItems();
+
+});
+
+// Instruct the IntersectionObserver to watch the sentinel
+intersectionObserver.observe(sentinel);*/
+    </script>
+
+    
+{%endblock%}

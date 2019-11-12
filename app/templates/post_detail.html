@@ -1,0 +1,78 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+<div class="container" style="max-width: 93.5rem;
+                    margin: 0 auto;
+                    padding: 0 2rem; ">
+
+{%set p=post%}
+	
+    <div class="card mb-3 align-middle" style=' margin-top: 80px;'>
+      	     <div class="card-header"><p>By: <strong><a href="{{url_for('profile', username=p.author.username)}}">{{p.author.username}}</a></strong></p> </div>
+
+            <img src="{{ p.img }}" class="card-img-top" alt="...">
+            <div class="card-body">
+              {% if current_user.post_liked(p) %}
+              <a href="#" class='dislikes' id={{p.id}}>Dislike</a>
+            
+              {%else%}
+              <a href="#" class='likes' id={{p.id}}>Like</a>
+              {%endif%}
+              {%if current_user.username == p.author.username%}
+              <a href="{{url_for('delete_post', id=p.id)}}">Delete</a>
+              {%endif%}
+
+              
+             
+              
+              <p id="count_{{p.id}}" >{{ p.likes.count() }}</p>
+             
+             
+              
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer</p>
+              <p class="card-text"><small class="text-muted">Posted: {{p.timestamp}}</small></p>
+          </div>
+
+        <div  style="" id='post_{{p.id}}'>
+              {%for c in comments%}
+              {%if p.id == c.comments.id%}
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item" style='border: none;' id='prof'><a href="{{url_for('profile', username=c.author.username)}}" style='text-decoration: none; color:black'><strong>{{c.author.username}} </strong></a> <span id='body'>{{c.body}}</span>   </li>
+            </ul>
+            {%endif%}
+            {%endfor%}
+        </div>
+
+        <table>
+
+            <form id='form_{{p.id}}'>
+                
+            
+              <input type="hidden" id='username' value="{{current_user.username}}">
+              <tr><input class="form-control comment" placeholder="Add a comment" style="width: 35.9em; height: 4em" id= 'comment_{{p.id}}'  ></tr>
+               <tr><input type="button" style="" tabindex="-1"  id="p_{{p.id}}" value="Post" /></tr>
+          </form>
+        </table>
+    </div>
+
+
+</div>
+
+<style type="text/css">
+  /*desktop*/
+    @media only screen and (min-width: 780px){
+      .card{
+        margin-left: 14.5em;
+        width: 36em;
+      }
+
+ 
+
+
+      
+    </style>
+
+
+
+{%endblock%}

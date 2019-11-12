@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+   
+
+
+<div class="container" style="max-width: 93.5rem;
+    							  margin: 0 auto;
+   								  padding: 0 2rem; position: absolute;">
+
+	<div class="row" id='scroller' style="padding-top: 10em;">
+			
+
+
+			
+				{% for p in posts%}
+
+				<div class=" col-lg-3 col-md-5 col-sm-12 gallery-item" style="margin-left: 1.5em; margin-bottom: 1.5em" id='content'>
+					<a  href="{{url_for('post_detail',id=p.id) }}" >
+			  		<img src="{{p.img}}" class="card-img-top" id='img' alt="...">
+			  		</a>
+			  		
+				</div>
+				{%endfor%}
+		
+
+		
+
+	</div>
+
+
+
+<!-- element to trigger the IntersectionObserver -->
+         
+</div>
+
+{%endblock%}

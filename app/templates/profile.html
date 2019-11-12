@@ -1,0 +1,155 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+	<header style="	font-size: 10px;
+">
+
+	<div class="container" style="max-width: 93.5rem;
+    margin: 0 auto;
+    padding: 0 2rem;">
+
+		<div class="profile" style=" padding: 5rem 0;
+">
+
+			<div class="profile-image" style="float: left;
+   											  width: calc(33.333% - 1rem);
+   											  display: flex;
+   											  justify-content: center;
+   											  align-items: center;
+   											  margin-right: 3rem;">
+
+				<img src="{{ user.avatar(150) }}" alt="" style="border-radius: 50%;">
+
+			</div>
+
+			<div class="profile-user-settings" style="margin-top: 1.1rem;">
+
+				<h1 class="profile-user-name" style="display: inline-block;
+    												 font-size: 3rem;
+    												 font-weight: 300;">{{user.username}}</h1>
+
+    			{%if  current_user.is_following(user)  and user.username != current_user.username%}
+				<button class="btn profile-edit-btn" style="font-weight: 600; font-size: 1.4rem;
+    														line-height: 1.8;
+    														border: 0.1rem solid #dbdbdb;
+    														border-radius: 0.3rem;
+    														padding: 0 2.4rem;
+    														margin-left: 2rem;"><a href="{{url_for('unfollow', username=user.username)}}" class='unfollow'>Unfollow</a></button>
+    			{%elif user.username != current_user.username%}
+    			<button class="btn profile-edit-btn" style="font-weight: 600; font-size: 1.4rem;
+    														line-height: 1.8;
+    														border: 0.1rem solid #dbdbdb;
+    														border-radius: 0.3rem;
+    														padding: 0 2.4rem;
+    														margin-left: 2rem;"><a href="#" class="follow" class="follow2" id='follow'>Follow</a></button>
+    			{%else%}
+    			<button class="btn profile-edit-btn" data-toggle="modal" data-target="#exampleModal" style="font-weight: 600; font-size: 1.4rem;
+    														line-height: 1.8;
+    														border: 0.1rem solid #dbdbdb;
+    														border-radius: 0.3rem;
+    														padding: 0 2.4rem;
+    														margin-left: 2rem;">New Post</button>
+    			{%endif%}
+
+				<button class="btn profile-settings-btn" aria-label="profile settings"style="font-size: 2rem;margin-left: 1rem;
+
+"><i class="fas fa-cog" aria-hidden="true"></i></button>
+
+			</div>
+
+			<div class="profile-stats" style="margin-top: 2.3rem;">
+
+				<ul>
+					<li style="display: inline-block;font-size: 1.6rem;line-height: 1.5;margin-right: 4rem;cursor:pointer;"><span class="profile-stat-count" style="font-weight: 600;" >{{count}}</span> posts</li>
+					<li style="display: inline-block;font-size: 1.6rem;line-height: 1.5;margin-right: 4rem;cursor:pointer;"><span class="profile-stat-count" style="font-weight: 600;" id='followers_count'>{{user.followers.count()}}</span> followers</li>
+					<li style="margin-right: 0;display: inline-block;font-size: 1.6rem;line-height: 1.5;margin-right: 4rem;cursor:pointer;"><span class="profile-stat-count" style="font-weight: 600;">{{user.followed.count()}}</span> following</li>
+				</ul>
+
+			</div>
+
+			<div class="profile-bio" style="font-size: 1.6rem;font-weight: 400;line-height: 1.5;margin-top: 2.3rem;">
+
+				<p><span class="profile-real-name" style="font-weight: 600;"></p>
+
+			</div>
+
+		</div>
+		<!-- End of profile section -->
+
+	</div>
+	<!-- End of container -->
+
+</header>
+
+<main>
+
+	<div class="container" style="max-width: 93.5rem;
+    							  margin: 0 auto;
+   								  padding: 0 2rem; position: absolute;">
+	<div class="row" style=" ">
+	
+
+		{% for p in posts%}
+
+		<div class="gallery-item col-lg-3 col-md-9 col-sm-12" style="margin-left: 1.5em; margin-bottom: 1.5em;
+    													   flex: 1 0 22rem;
+    													   margin: 1rem;
+    													   color: #fff;
+    													   cursor: pointer;">
+			<a  href="{{url_for('post_detail', id=p.id) }}">
+	  		<img src="{{ p.img }}" class="card-img-top" alt="...">
+	  		</a>
+	  		
+		</div>
+		{% endfor%}
+	</div>
+			
+		<div class="loader"></div>
+
+	</div>
+	<!-- End of container -->
+</div>
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add a new post</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" enctype=multipart/form-data>
+		<p>
+		<input type=file name=photo>
+	
+		</p>
+		<input type="submit" name="">
+		</form>
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{%endblock%}
+
+{%block style%}
+	
+	<style type="text/css">
+
+
+
+
+
+
+	</style>	
+
+{%endblock%}

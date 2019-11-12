@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Login User</h1>
+<form action='' method="post" enctype=multipart/form-data>
+	<div class="form-group ">
+		{{ form.hidden_tag() }}
+		<p>
+			{{ form.username.label }}
+			{{ form.username(size=32, class_="form-control col-sm-10", placeholder_="Enter Username") }}
+			{% for error in form.username.errors %}
+	       		 <span style="color: red;">[{{ error }}]</span>
+	    	{% endfor %}
+		</p>
+		<p>
+			{{ form.password.label }}
+			{{ form.password(size=32, class_="form-control col-sm-10") }}
+			{% for error in form.password.errors %}
+	       		 <span style="color: red;">[{{ error }}]</span>
+	    	{% endfor %}
+		</p>
+			<p>{{ form.submit() }}</p>
+
+	</div>
+
+</form>
+<a href="{{url_for('sing_up')}}">Crear Cuenta</a>
+{% endblock %}

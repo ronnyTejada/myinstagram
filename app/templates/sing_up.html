@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<H1>Sing Up!</H1>
+
+<form action='' method="post" enctype=multipart/form-data>
+	{{ form.hidden_tag() }}
+	<p>
+		{{ form.username.label }}
+		{{ form.username(size=32, class_="form-control col-sm-10") }}
+		{% for error in form.username.errors %}
+       		 <span style="color: red;">[{{ error }}]</span>
+    	{% endfor %}
+	</p>
+	<p>
+		{{ form.email.label }}
+		{{ form.email(size=32, class_="form-control col-sm-10") }}
+		{% for error in form.email.errors %}
+       		<span style="color: red;">[{{ error }}]</span>
+    	{% endfor %}
+	</p>
+	<p>
+		{{ form.password.label }}
+		{{ form.password(size=32, class_="form-control col-sm-10") }}
+		{% for error in form.password.errors %}
+       		 <span style="color: red;">[{{ error }}]</span>
+    	{% endfor %}
+	</p>
+	<p>
+		{{ form.password2.label }}
+		{{ form.password2(size=32, class_="form-control col-sm-10") }}
+		{% for error in form.password2.errors %}
+       		 <span style="color: red;">[{{ error }}]</span>
+    	{% endfor %}
+	</p>
+	
+	<p>{{ form.submit() }}</p>
+</form>
+<a href="{{url_for('login')}}">Login</a>
+{% endblock %}
