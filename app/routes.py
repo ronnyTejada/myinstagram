@@ -104,9 +104,6 @@ def addPost():
             db.session.commit()
     return render_template('addPost.html')
 
-
-counter_end = 6
-
 @app.route('/explore/')
 @login_required
 def explore():
@@ -119,43 +116,12 @@ def explore():
     posts = Post.query.filter_by().all()
     return render_template('explore.html', title='Explore', posts=posts)
 
-
-
-
-@app.route('/load')
-def load():
-    """route to return the posts """
-    time.sleep(0.2) #simular delay
-    
-    if request.args:
-        counter = int(request.args.get('c')) #the counter value sent in qs
-
-        if counter == 0:
-            print(f"returning posts 0 to {quantity}")
-            #slice 0 -> quantity from the post
-            
-            res = make_response(jsonify(str(posts)[0: quantity]), 25)
-
-        elif counter == p:
-            print('No more posts')
-            res = make_response(jsonify({}), 200)
-
-        else:
-            print(f"returning posts {counter} to {counter + quantity}")
-            #slice counter -> quantity from the db
-            res = make_response(jsonify(str(posts)[counter: counter + quantity]), 10)
-
-    return res
-
-
-
 @app.route('/follow', methods=['POST'])
 @login_required
 def follow():
     username = request.form['username']
     accion = request.form['accion']
-
-
+	
     if username and accion:
         user = User.query.filter_by(username=username).first()
         if accion == 'follow':
